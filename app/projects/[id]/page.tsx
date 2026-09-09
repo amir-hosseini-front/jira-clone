@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import Board from "./board-client";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 
 export default async function ProjectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+
   const { id } = await params;
 
   const project = await prisma.project.findUnique({
