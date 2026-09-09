@@ -1,8 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import Board from "./board-client";
+import { notFound } from "next/navigation";
 
-export default async function BoardPage() {
-  const project = await prisma.project.findFirst({
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const project = await prisma.project.findUnique({
+    where: { id },
     include: {
       issues: {
         include: { assignee: true },
@@ -12,9 +20,7 @@ export default async function BoardPage() {
   });
 
   if (!project) {
-    return (
-      <div className="p-8">هیچ پروژه‌ای پیدا نشد. اول seed رو اجرا کن.</div>
-    );
+    notFound();
   }
 
   return <Board project={project} />;

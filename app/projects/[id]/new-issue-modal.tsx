@@ -15,21 +15,21 @@ export default function NewIssueModal({ projectId }: { projectId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-sm px-3 py-1.5 border rounded-md hover:bg-gray-50"
+        className="text-sm px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
       >
         + کار جدید
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h2 className="text-lg font-medium mb-4">ساخت کار جدید</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-lg font-semibold mb-5">ساخت کار جدید</h2>
 
             <form action={handleSubmit} className="flex flex-col gap-4">
               <input type="hidden" name="projectId" value={projectId} />
 
               <div>
-                <label className="text-sm text-gray-600 block mb-1">
+                <label className="text-xs font-medium text-gray-500 block mb-1.5">
                   عنوان
                 </label>
                 <input
@@ -37,19 +37,19 @@ export default function NewIssueModal({ projectId }: { projectId: string }) {
                   type="text"
                   required
                   autoFocus
-                  className="w-full border rounded-md px-3 py-2 text-sm"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
                   placeholder="مثلا: طراحی صفحه پروفایل"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 block mb-1">
+                <label className="text-xs font-medium text-gray-500 block mb-1.5">
                   اولویت
                 </label>
                 <select
                   name="priority"
                   defaultValue="MEDIUM"
-                  className="w-full border rounded-md px-3 py-2 text-sm"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
                 >
                   <option value="LOW">پایین</option>
                   <option value="MEDIUM">متوسط</option>
@@ -57,17 +57,17 @@ export default function NewIssueModal({ projectId }: { projectId: string }) {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 mt-2">
+              <div className="flex justify-end gap-2 mt-3">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="text-sm px-3 py-1.5 border rounded-md"
+                  className="text-sm px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   انصراف
                 </button>
                 <button
                   type="submit"
-                  className="text-sm px-3 py-1.5 bg-black text-white rounded-md"
+                  className="text-sm px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
                 >
                   ساخت
                 </button>
