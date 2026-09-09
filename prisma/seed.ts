@@ -1,3 +1,4 @@
+import { hashPassword } from "@/lib/hash";
 import { PrismaClient } from "../generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
@@ -9,7 +10,7 @@ async function main() {
     data: {
       name: "کاربر تست",
       email: "test@example.com",
-      password: "1234",
+      password: hashPassword("1234"),
     },
   });
 

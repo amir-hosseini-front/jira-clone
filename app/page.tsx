@@ -1,8 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import NewProjectModal from "./new-project-modal";
-
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+
   const projects = await prisma.project.findMany({
     include: { issues: true },
     orderBy: { createdAt: "desc" },
