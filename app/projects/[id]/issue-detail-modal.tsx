@@ -2,19 +2,27 @@
 
 import { useState } from "react";
 import { updateIssue, deleteIssue } from "./actions";
+import { Select, AssigneeSelect } from "./custom-select";
+type Member = {
+  id: string;
+  user: { id: string; name: string; email: string };
+};
 
 type Issue = {
   id: string;
   title: string;
   status: "TODO" | "IN_PROGRESS" | "DONE";
   priority: "LOW" | "MEDIUM" | "HIGH";
+  assignee: { id: string; name: string } | null;
 };
 
 export default function IssueDetailModal({
   issue,
+  members,
   onClose,
 }: {
   issue: Issue;
+  members: Member[];
   onClose: () => void;
 }) {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -49,6 +57,23 @@ export default function IssueDetailModal({
               required
               defaultValue={issue.title}
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-gray-500 block mb-1.5">
+              مسئول
+            </label>
+            <AssigneeSelect
+              name="assigneeId"
+              defaultValue={issue.assignee?.id ?? ""}
+              options={[
+                { value: "", label: "بدون مسئول" },
+                ...members.map((m) => ({
+                  value: m.user.id,
+                  label: m.user.name,
+                })),
+              ]}
             />
           </div>
 
