@@ -1,19 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { updateIssue, deleteIssue } from "./actions";
+import { updateIssue, deleteIssue, createComment } from "./actions";
 import { Select, AssigneeSelect } from "./custom-select";
 type Member = {
   id: string;
   user: { id: string; name: string; email: string };
 };
+type Status = "TODO" | "IN_PROGRESS" | "DONE";
+type Comment = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  author: { name: string };
+};
 
 type Issue = {
   id: string;
   title: string;
-  status: "TODO" | "IN_PROGRESS" | "DONE";
+  description: string | null;
+  status: Status;
   priority: "LOW" | "MEDIUM" | "HIGH";
+  order: number;
   assignee: { id: string; name: string } | null;
+  comments: Comment[];
 };
 
 export default function IssueDetailModal({
@@ -108,7 +118,18 @@ export default function IssueDetailModal({
               </select>
             </div>
           </div>
-
+          <div>
+            <label className="text-xs font-medium text-gray-500 block mb-1.5">
+              توضیحات (اختیاری)
+            </label>
+            <textarea
+              name="description"
+              rows={3}
+              defaultValue={issue.description ?? ""}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all resize-none"
+              placeholder="توضیح بیشتر درباره این کار..."
+            />
+          </div>
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
             {confirmingDelete ? (
               <div className="flex items-center gap-2">
@@ -155,6 +176,57 @@ export default function IssueDetailModal({
             </div>
           </div>
         </form>
+        <div className="mt-5 pt-4 border-t border-gray-100">
+          <div className="text-xs font-medium text-gray-500 mb-3">
+            کامنت‌ها ({issue.comments.length})
+          </div>
+
+          <div className="flex flex-col gap-3 max-h-48 overflow-y-auto mb-3">
+            {issue.comments.length === 0 ? (
+              <p className="text-xs text-gray-400">هنوز کامنتی نیست.</p>
+            ) : (
+              issue.comments.map((comment) => (
+                <div key={comment.id} className="flex gap-2.5">
+                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-medium text-gray-600 shrink-0">
+                    {comment.author.name.slice(0, 2)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xs font-medium text-gray-700">
+                        {comment.author.name}
+                      </span>
+                      <span className="text-[10px] text-gray-400">
+                        {new Date(comment.createdAt).toLocaleDateString(
+                          "fa-IR",
+                        )}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-0.5">
+                      {comment.content}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form action={createComment} className="flex gap-2">
+            <input type="hidden" name="issueId" value={issue.id} />
+            <input
+              name="content"
+              type="text"
+              required
+              placeholder="یه کامنت بنویس..."
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
+            />
+            <button
+              type="submit"
+              className="text-sm px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+            >
+              ارسال
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

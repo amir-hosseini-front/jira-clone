@@ -29,13 +29,23 @@ type Member = {
   id: string;
   user: { id: string; name: string; email: string };
 };
+
+type Comment = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  author: { name: string };
+};
+
 type Issue = {
   id: string;
   title: string;
+  description: string | null;
   status: Status;
   priority: "LOW" | "MEDIUM" | "HIGH";
   order: number;
   assignee: { id: string; name: string } | null;
+  comments: Comment[];
 };
 
 type Project = {
