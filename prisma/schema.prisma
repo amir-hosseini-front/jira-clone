@@ -8,15 +8,25 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  projects  Project[] @relation("ProjectOwner")
-  issues    Issue[]   @relation("IssueAssignee")
-  createdAt DateTime  @default(now())
+  id          String          @id @default(cuid())
+  name        String
+  email       String          @unique
+  password    String
+  projects    Project[]       @relation("ProjectOwner")
+  issues      Issue[]         @relation("IssueAssignee")
+  memberships ProjectMember[]
+  createdAt   DateTime        @default(now())
 }
+model ProjectMember {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
 
+  @@unique([projectId, userId])
+}
 model Project {
   id        String   @id @default(cuid())
   name      String
@@ -24,6 +34,7 @@ model Project {
   owner     User     @relation("ProjectOwner", fields: [ownerId], references: [id])
   ownerId   String
   issues    Issue[]
+  members ProjectMember[]
   createdAt DateTime @default(now())
 }
 

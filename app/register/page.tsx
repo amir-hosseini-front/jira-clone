@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { registerUser } from "../actions";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,16 @@ export default function LoginPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+
+    try {
+      await registerUser(formData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "خطایی پیش اومد");
+      setLoading(false);
+      return;
+    }
+
+    // بعد از ثبت‌نام موفق، خودکار لاگین کن
     const result = await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
@@ -24,7 +35,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("ایمیل یا رمز عبور اشتباهه");
+      setError("ثبت‌نام شد ولی ورود خودکار ناموفق بود، دستی وارد شو");
       return;
     }
 
@@ -35,9 +46,22 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-sm border border-gray-200/80">
-        <h1 className="text-lg font-semibold mb-6 text-center">ورود</h1>
+        <h1 className="text-lg font-semibold mb-6 text-center">ساخت حساب</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="text-xs font-medium text-gray-500 block mb-1.5">
+              نام
+            </label>
+            <input
+              name="name"
+              type="text"
+              required
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
+              placeholder="نام و نام‌خانوادگی"
+            />
+          </div>
+
           <div>
             <label className="text-xs font-medium text-gray-500 block mb-1.5">
               ایمیل
@@ -47,7 +71,7 @@ export default function LoginPage() {
               type="email"
               required
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
-              placeholder="test@example.com"
+              placeholder="you@example.com"
             />
           </div>
 
@@ -59,6 +83,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
+              minLength={4}
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
               placeholder="••••••••"
             />
@@ -73,15 +98,16 @@ export default function LoginPage() {
             disabled={loading}
             className="text-sm px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50"
           >
-            {loading ? "در حال ورود..." : "ورود"}
+            {loading ? "در حال ساخت حساب..." : "ساخت حساب"}
           </button>
-          <p className="text-xs text-gray-400 text-center mt-5">
-            حساب نداری؟{" "}
-            <a href="/register" className="text-gray-700 font-medium">
-              ثبت‌نام کن
-            </a>
-          </p>
         </form>
+
+        <p className="text-xs text-gray-400 text-center mt-5">
+          حساب داری؟{" "}
+          <a href="/login" className="text-gray-700 font-medium">
+            وارد شو
+          </a>
+        </p>
       </div>
     </div>
   );

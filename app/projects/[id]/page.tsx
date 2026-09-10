@@ -21,6 +21,9 @@ export default async function ProjectPage({
         include: { assignee: true },
         orderBy: { order: "asc" },
       },
+      members: {
+        include: { user: true },
+      },
     },
   });
 
