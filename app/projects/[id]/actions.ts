@@ -26,7 +26,7 @@ export async function createIssue(formData: FormData) {
     throw new Error("عنوان نمی‌تونه خالی باشه");
   }
 
-  await prisma.issue.create({
+  const issue = await prisma.issue.create({
     data: {
       title,
       description: description || null,
@@ -34,6 +34,14 @@ export async function createIssue(formData: FormData) {
       status: "TODO",
       projectId,
       order: 0,
+    },
+  });
+
+  await prisma.activity.create({
+    data: {
+      type: "CREATED",
+      issueId: issue.id,
+      userId: currentUser.id,
     },
   });
 
@@ -51,13 +59,18 @@ export async function updateIssue(formData: FormData) {
   const status = formData.get("status") as string;
   const assigneeId = formData.get("assigneeId") as string;
 
-  const existing = await prisma.issue.findUnique({ where: { id } });
+  const existing = await prisma.issue.findUnique({
+    where: { id },
+    include: { assignee: true },
+  });
   if (!existing) throw new Error("کار پیدا نشد");
   await assertMember(existing.projectId, currentUser.id);
 
   if (!title || title.trim() === "") {
     throw new Error("عنوان نمی‌تونه خالی باشه");
   }
+
+  const newAssigneeId = assigneeId === "" ? null : assigneeId;
 
   const updated = await prisma.issue.update({
     where: { id },
@@ -66,13 +79,50 @@ export async function updateIssue(formData: FormData) {
       description: description || null,
       priority: priority as "LOW" | "MEDIUM" | "HIGH",
       status: status as "TODO" | "IN_PROGRESS" | "DONE",
-      assigneeId: assigneeId === "" ? null : assigneeId,
+      assigneeId: newAssigneeId,
     },
   });
 
+  const activities: { type: string; fromValue?: string; toValue?: string }[] =
+    [];
+
+  if (existing.status !== updated.status) {
+    activities.push({
+      type: "STATUS_CHANGED",
+      fromValue: existing.status,
+      toValue: updated.status,
+    });
+  }
+  if (existing.priority !== updated.priority) {
+    activities.push({
+      type: "PRIORITY_CHANGED",
+      fromValue: existing.priority,
+      toValue: updated.priority,
+    });
+  }
+  if (existing.assigneeId !== newAssigneeId) {
+    const newAssignee = newAssigneeId
+      ? await prisma.user.findUnique({ where: { id: newAssigneeId } })
+      : null;
+    activities.push({
+      type: "ASSIGNEE_CHANGED",
+      fromValue: existing.assignee?.name ?? "بدون مسئول",
+      toValue: newAssignee?.name ?? "بدون مسئول",
+    });
+  }
+
+  if (activities.length > 0) {
+    await prisma.activity.createMany({
+      data: activities.map((a) => ({
+        ...a,
+        issueId: id,
+        userId: currentUser.id,
+      })),
+    });
+  }
+
   revalidatePath(`/projects/${updated.projectId}`);
 }
-
 export async function deleteIssue(formData: FormData) {
   const currentUser = await getCurrentUser();
   if (!currentUser) throw new Error("باید وارد شوی");

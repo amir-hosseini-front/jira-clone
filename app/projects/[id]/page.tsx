@@ -24,6 +24,10 @@ export default async function ProjectPage({
             include: { author: true },
             orderBy: { createdAt: "asc" },
           },
+          activities: {
+            include: { user: true },
+            orderBy: { createdAt: "asc" },
+          },
         },
         orderBy: { order: "asc" },
       },

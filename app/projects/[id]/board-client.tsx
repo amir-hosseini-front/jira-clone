@@ -37,6 +37,15 @@ type Comment = {
   author: { name: string };
 };
 
+type Activity = {
+  id: string;
+  type: string;
+  fromValue: string | null;
+  toValue: string | null;
+  createdAt: Date;
+  user: { name: string };
+};
+
 type Issue = {
   id: string;
   title: string;
@@ -46,6 +55,7 @@ type Issue = {
   order: number;
   assignee: { id: string; name: string } | null;
   comments: Comment[];
+  activities: Activity[];
 };
 
 type Project = {
@@ -141,7 +151,7 @@ function Column({
       >
         <div
           ref={setNodeRef}
-          className={`rounded-2xl p-2.5 min-h-[120px] flex flex-col gap-2.5 transition-colors ${
+          className={`rounded-2xl p-2.5 min-h-30 flex flex-col gap-2.5 transition-colors ${
             isOver ? "bg-gray-100" : "bg-gray-50/70"
           }`}
         >
