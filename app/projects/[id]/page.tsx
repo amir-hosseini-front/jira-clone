@@ -18,7 +18,13 @@ export default async function ProjectPage({
     where: { id },
     include: {
       issues: {
-        include: { assignee: true },
+        include: {
+          assignee: true,
+          comments: {
+            include: { author: true },
+            orderBy: { createdAt: "asc" },
+          },
+        },
         orderBy: { order: "asc" },
       },
       members: {
