@@ -169,10 +169,11 @@ function Column({
 }
 
 export default function Board({ project }: { project: Project }) {
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [issues, setIssues] = useState(project.issues);
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
 
+  const selectedIssue = issues.find((i) => i.id === selectedIssueId) ?? null;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
@@ -251,7 +252,7 @@ export default function Board({ project }: { project: Project }) {
               issues={issues
                 .filter((i) => i.status === col.status)
                 .sort((a, b) => a.order - b.order)}
-              onCardClick={setSelectedIssue}
+              onCardClick={(issue) => setSelectedIssueId(issue.id)}
             />
           ))}
         </div>
@@ -271,7 +272,7 @@ export default function Board({ project }: { project: Project }) {
         <IssueDetailModal
           issue={selectedIssue}
           members={project.members}
-          onClose={() => setSelectedIssue(null)}
+          onClose={() => setSelectedIssueId(null)}
         />
       )}
     </div>
