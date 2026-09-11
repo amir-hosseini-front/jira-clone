@@ -37,6 +37,15 @@ type Comment = {
   author: { name: string };
 };
 
+type Activity = {
+  id: string;
+  type: string;
+  fromValue: string | null;
+  toValue: string | null;
+  createdAt: Date;
+  user: { name: string };
+};
+
 type Issue = {
   id: string;
   title: string;
@@ -46,6 +55,7 @@ type Issue = {
   order: number;
   assignee: { id: string; name: string } | null;
   comments: Comment[];
+  activities: Activity[];
 };
 
 type Project = {
@@ -141,7 +151,7 @@ function Column({
       >
         <div
           ref={setNodeRef}
-          className={`rounded-2xl p-2.5 min-h-[120px] flex flex-col gap-2.5 transition-colors ${
+          className={`rounded-2xl p-2.5 min-h-30 flex flex-col gap-2.5 transition-colors ${
             isOver ? "bg-gray-100" : "bg-gray-50/70"
           }`}
         >
@@ -159,10 +169,11 @@ function Column({
 }
 
 export default function Board({ project }: { project: Project }) {
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [issues, setIssues] = useState(project.issues);
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
 
+  const selectedIssue = issues.find((i) => i.id === selectedIssueId) ?? null;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
@@ -241,7 +252,7 @@ export default function Board({ project }: { project: Project }) {
               issues={issues
                 .filter((i) => i.status === col.status)
                 .sort((a, b) => a.order - b.order)}
-              onCardClick={setSelectedIssue}
+              onCardClick={(issue) => setSelectedIssueId(issue.id)}
             />
           ))}
         </div>
@@ -261,7 +272,7 @@ export default function Board({ project }: { project: Project }) {
         <IssueDetailModal
           issue={selectedIssue}
           members={project.members}
-          onClose={() => setSelectedIssue(null)}
+          onClose={() => setSelectedIssueId(null)}
         />
       )}
     </div>
