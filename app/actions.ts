@@ -35,6 +35,7 @@ export async function createProject(formData: FormData) {
 
   const name = formData.get("name") as string;
   const key = formData.get("key") as string;
+  const type = (formData.get("type") as string) || "KANBAN";
 
   if (!name || !key) {
     throw new Error("نام و کد پروژه الزامی هستن");
@@ -44,6 +45,7 @@ export async function createProject(formData: FormData) {
     data: {
       name,
       key: key.toUpperCase(),
+      type: type as "KANBAN" | "SCRUM",
       ownerId: currentUser.id,
       members: {
         create: { userId: currentUser.id },
