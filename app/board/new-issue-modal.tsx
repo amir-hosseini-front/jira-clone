@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { createIssue } from "./actions";
+import { createIssue } from "../(app)/projects/[id]/actions";
 
-export default function NewIssueModal({ projectId }: { projectId: string }) {
+export function NewIssueModal({
+  projectId,
+  defaultStatus = "TODO",
+}: {
+  projectId: string;
+  defaultStatus?: "TODO" | "BACKLOG";
+}) {
   const [open, setOpen] = useState(false);
 
   async function handleSubmit(formData: FormData) {
@@ -21,12 +27,13 @@ export default function NewIssueModal({ projectId }: { projectId: string }) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h2 className="text-lg font-semibold mb-5">ساخت کار جدید</h2>
 
             <form action={handleSubmit} className="flex flex-col gap-4">
               <input type="hidden" name="projectId" value={projectId} />
+              <input type="hidden" name="status" value={defaultStatus} />
 
               <div>
                 <label className="text-xs font-medium text-gray-500 block mb-1.5">
@@ -39,6 +46,18 @@ export default function NewIssueModal({ projectId }: { projectId: string }) {
                   autoFocus
                   className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
                   placeholder="مثلا: طراحی صفحه پروفایل"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-gray-500 block mb-1.5">
+                  توضیحات (اختیاری)
+                </label>
+                <textarea
+                  name="description"
+                  rows={3}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all resize-none"
+                  placeholder="توضیح بیشتر درباره این کار..."
                 />
               </div>
 

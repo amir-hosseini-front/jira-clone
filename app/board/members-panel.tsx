@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { addProjectMember } from "../../actions";
+import { addProjectMember } from "@/app/actions";
+import type { Member } from "@/lib/types";
 
-type Member = {
-  id: string;
-  user: { id: string; name: string; email: string };
-};
-
-export default function MembersPanel({
+export function MembersPanel({
   projectId,
   members,
 }: {
@@ -58,9 +54,7 @@ export default function MembersPanel({
               <input type="hidden" name="projectId" value={projectId} />
 
               <div>
-                <label className="text-xs font-medium text-gray-500 block mb-1.5">
-                  ایمیل کاربر
-                </label>
+                <label className="text-xs font-medium text-gray-500 block mb-1.5">ایمیل کاربر</label>
                 <input
                   name="email"
                   type="email"

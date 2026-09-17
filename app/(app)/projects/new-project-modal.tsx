@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { createProject } from "./actions";
+import { createProject } from "@/app/actions";
 
-export default function NewProjectModal() {
+export function NewProjectModal() {
   const [open, setOpen] = useState(false);
-
+  const [type, setType] = useState<"KANBAN" | "SCRUM">("KANBAN");
   return (
     <>
       <button
@@ -48,7 +48,47 @@ export default function NewProjectModal() {
                   placeholder="مثلا: APP"
                 />
               </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 block mb-1.5">
+                  نوع پروژه
+                </label>
+                <input type="hidden" name="type" value={type} />
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setType("KANBAN")}
+                    className={`text-right border rounded-lg p-3 transition-colors ${
+                      type === "KANBAN"
+                        ? "border-gray-900 bg-gray-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-sm font-medium text-gray-800">
+                      کانبان
+                    </div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">
+                      بورد ساده، بدون Sprint
+                    </div>
+                  </button>
 
+                  <button
+                    type="button"
+                    onClick={() => setType("SCRUM")}
+                    className={`text-right border rounded-lg p-3 transition-colors ${
+                      type === "SCRUM"
+                        ? "border-gray-900 bg-gray-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-sm font-medium text-gray-800">
+                      اسکرام
+                    </div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">
+                      با Sprint و Story Point
+                    </div>
+                  </button>
+                </div>
+              </div>
               <div className="flex justify-end gap-2 mt-3">
                 <button
                   type="button"

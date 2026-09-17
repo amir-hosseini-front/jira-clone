@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import Board from "./board-client";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { ProjectView } from "@/app/board/project-view";
 
 export default async function ProjectPage({
   params,
@@ -34,6 +34,9 @@ export default async function ProjectPage({
       members: {
         include: { user: true },
       },
+      sprints: {
+        orderBy: { createdAt: "asc" },
+      },
     },
   });
 
@@ -41,5 +44,5 @@ export default async function ProjectPage({
     notFound();
   }
 
-  return <Board project={project} />;
+  return <ProjectView project={project} />;
 }
